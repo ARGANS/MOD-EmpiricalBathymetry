@@ -196,7 +196,7 @@ class EmpiricalBathymetry:
             'm1': float(self._m1),
             'nb': int(self._nb),            
             'rmse': float(self._rmse),
-            'validation_rmse': float(self._val_rmse)
+            'validation_rmse': float(self._val_rmse) if self._val_rmse else None,
         }
 
 
