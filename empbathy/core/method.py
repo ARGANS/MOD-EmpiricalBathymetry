@@ -244,18 +244,20 @@ class EmpiricalBathymetry:
            
            
     def _sample_raster(self, gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        """Add reflectance values sampled at the insitu points to the GeoDataFrame.
-        """
-        # Sample reflectance bands at insitu points
-        interpolated = self._da.interp(
-            x=xr.DataArray(gdf.geometry.x,dims='z'), 
-            y=xr.DataArray(gdf.geometry.y,dims='z'),
+        """Add reflectance values sampled at the in-situ points to the GeoDataFrame."""
+        
+        # Use vectorized nearest-neighbor sampling
+        selected = self._da.sel(
+            x=xr.DataArray(gdf.geometry.x.values, dims='z'),
+            y=xr.DataArray(gdf.geometry.y.values, dims='z'),
             method='nearest'
         )
-        # Add the reflectance collected at each point as new columns i.e. ['z','band_i','band_j','logratio','geometry']
-        gdf['band_i'] = interpolated.sel(band=self._bandi)
-        gdf['band_j'] = interpolated.sel(band=self._bandj)
-        gdf['logratio'] = interpolated.sel(band='logratio')
+
+        # Assign sampled values to GeoDataFrame
+        gdf['band_i'] = selected.sel(band=self._bandi).values
+        gdf['band_j'] = selected.sel(band=self._bandj).values
+        gdf['logratio'] = selected.sel(band='logratio').values
+
         return gdf
         
         
