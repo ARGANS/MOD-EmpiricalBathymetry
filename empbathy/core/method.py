@@ -12,6 +12,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from empbathy.core.filters import *
+from empbathy.tools.plotting import plot_regression
 
 class EmpiricalBathymetry:
     
@@ -48,7 +49,7 @@ class EmpiricalBathymetry:
         self._nb         = None
 
 
-    def set_imagery(self, data_array: xr.DataArray, band_i: Optional[str]='band_i', band_j: Optional[str]='band_j', visualise=False) -> None:
+    def set_imagery(self, data_array: xr.DataArray, band_i: Optional[str]='band_i', band_j: Optional[str]='band_j', visualise: bool=False) -> None:
         
         """ Set and preprocess the imagery data for the Empirical Bathymetry method.
 
@@ -56,6 +57,7 @@ class EmpiricalBathymetry:
             data_array (xr.DataArray): DataArray containing the imagery data.
             band_i (str, optional): Band name in xr.DataArray to assign as Band I within the method. Defaults to 'band_i'.
             band_j (str, optional): Band name in xr.DataArray to assign as Band J within the method. Defaults to 'band_i'.
+            visualise (bool, optional): Visualise the data array. Default to no visualisation.
             
         """
         
@@ -76,7 +78,7 @@ class EmpiricalBathymetry:
             self._da.plot.imshow(col='band', col_wrap=2, cmap='viridis', aspect=1, size=4)
 
         
-    def set_insitu(self, gdf: gpd.GeoDataFrame, depth: str='z', minmax: tuple=None, sigma: float=None) -> None:
+    def set_insitu(self, gdf: gpd.GeoDataFrame, depth: str='z', minmax: tuple=None, sigma: float=None, visualise: bool=False) -> None:
 
         """ Set and preprocess the insitu data for the Empirical Bathymetry method.
         
@@ -85,7 +87,8 @@ class EmpiricalBathymetry:
             depth (str, optional): Column name in the GeoDataFrame containing the depth data. Defaults to 'z'.
             minmax (tuple, optional): Tuple of minimum and maximum depth values to filter the data. Defaults to None.
             sigma (float, optional): Number of standard deviations to filter the data from LogRatio. Defaults to None.
-
+            visualise (bool, optional): Visualise the GeoDataFrame. Default to no visualisation.
+            
         """
 
         if self._da is None:
@@ -126,13 +129,16 @@ class EmpiricalBathymetry:
         # Reset calibration results, if any
         self._reset_results()
            
+        if visualise:
+            self._gdf.plot()
            
-    def calibrate(self, validation: float=None) -> tuple:
+    def calibrate(self, validation: float=None, visualise: bool=False) -> tuple:
         
         """ Perform the calibration of the empirical bathymetry model using the loaded imagery and insitu data.
         
         Args:
             validation (float, optional): Fraction of the data to use for validation. Defaults to None.
+            visualise (bool, optional): Visualise the calibration. Default to no visualisation.
             
         """
 
@@ -169,6 +175,9 @@ class EmpiricalBathymetry:
         self._apply_coeffs(self._m0, self._m1)
 
         self._calibrated = True
+        
+        if visualise:
+            plot_regression(train_gdf, test_gdf=test_gdf, m0=self._m0, m1=self._m1, metric=self._rmse)
 
     @property
     def array(self, bands: list=None) -> xr.DataArray:
