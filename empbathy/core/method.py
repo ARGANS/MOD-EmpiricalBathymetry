@@ -24,7 +24,12 @@ class EmpiricalBathymetry:
         - Set the imagery data: method.set_imagery(data_array, *args)
         - Set the insitu data: method.set_insitu(geodataframe, *args)
         - Perform the calibration: method.calibrate(*args)
-        - Export the results: method.export()
+        - Results can be accessed via properties: 
+            - method.array  = xr.DataArray with all bands, including log ratio and depth.
+            - method.depth  = xr.DataArray with only the depth band.
+            - method.insitu = gpd.GeoDataFrame after filtering, with only the insitu data points used.
+            - method.stats  = dict with calibration statistics, including m0, m1, nb, rmse, and validation_rmse.
+            - method.plot   = matplotlib.figure with the regression plot of the calibration.
     """
 
     def __init__(self, nfactor: float=10000.0):

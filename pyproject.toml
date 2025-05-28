@@ -16,3 +16,11 @@ dependencies = [
     "shapely==2.0.4",
     "scikit-learn==1.5.1",
 ]
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-cov>=6.1.1",
+    "ruff>=0.11.11",
+]
+[tool.pytest.ini_options]
+addopts = "--maxfail=1 --cov=empbathy"
