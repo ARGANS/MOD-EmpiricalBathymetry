@@ -132,7 +132,11 @@ class EmpiricalBathymetry:
         self._reset_results()
            
         if visualise:
-            self._gdf.plot()
+            self._gdf.plot(
+                color='red', 
+                markersize=5, 
+                label=f'Insitu Points (NB : {len(self._gdf)})'  # label for the legend
+            )
            
     def calibrate(self, validation: float=None, visualise: bool=False) -> tuple:
         
