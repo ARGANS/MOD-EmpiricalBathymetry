@@ -47,7 +47,7 @@ def plot_regression(train_gdf: gpd.GeoDataFrame,
 
     axs.scatter(x_train, y_train, color='gray', s=0.5, marker='x', label='Training Data')
     if x_test is not None:
-        axs.scatter(x_test, y_test, color='forestgreen', s=0.5, marker='x', label='Test Data')
+        axs.scatter(x_test, y_test, color='forestgreen', s=0.9, marker='x', label='Test Data')
     axs.plot(x_reg, y_reg, color='red', label='Regression')
 
     axs.set_xlabel('Depth (m)')
