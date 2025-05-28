@@ -7,7 +7,8 @@ def plot_regression(train_gdf: gpd.GeoDataFrame,
                     test_gdf: gpd.GeoDataFrame = None,
                     m0: float = 0.0,
                     m1: float = 1.0,
-                    metric: float = 0.0) -> plt.Figure:
+                    metric: float = 0.0,
+                    col='z') -> plt.Figure:
     """Plots regression using training data and optionally test data.
 
     Args:

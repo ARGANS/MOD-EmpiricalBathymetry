@@ -78,13 +78,13 @@ class EmpiricalBathymetry:
             self._da.plot.imshow(col='band', col_wrap=2, cmap='viridis', aspect=1, size=4)
 
         
-    def set_insitu(self, gdf: gpd.GeoDataFrame, depth: str='z', minmax: tuple=None, sigma: float=None, visualise: bool=False) -> None:
+    def set_insitu(self, gdf: gpd.GeoDataFrame, depth_col: str='z', minmax: tuple=None, sigma: float=None, visualise: bool=False) -> None:
 
         """ Set and preprocess the insitu data for the Empirical Bathymetry method.
         
         Args:
             gdf (gpd.GeoDataFrame): GeoDataFrame containing the insitu data.
-            depth (str, optional): Column name in the GeoDataFrame containing the depth data. Defaults to 'z'.
+            depth_col (str, optional): Column name in the GeoDataFrame containing the depth data. Defaults to 'z'.
             minmax (tuple, optional): Tuple of minimum and maximum depth values to filter the data. Defaults to None.
             sigma (float, optional): Number of standard deviations to filter the data from LogRatio. Defaults to None.
             visualise (bool, optional): Visualise the GeoDataFrame. Default to no visualisation.
@@ -95,12 +95,12 @@ class EmpiricalBathymetry:
             raise ValueError('Please set the imagery data array first using .set_imagery()')
                 
         # Ensure the GeoDataFrame has the required columns
-        if any([i not in gdf.columns for i in [depth,'geometry']]):
+        if any([i not in gdf.columns for i in [depth_col,'geometry']]):
             raise ValueError('Insitu GeoDataFrame must have columns: z, geometry')
         
         # Subset to the required columns and rename to standardized 'z'
-        temp = gdf[[depth,'geometry']].copy()
-        temp = temp.rename(columns={depth:'z'})
+        temp = gdf[[depth_col,'geometry']].copy()
+        temp = temp.rename(columns={depth_col:'z'})
 
         # Align the CRS of the GeoDataFrame to the DataArray
         temp = temp.to_crs(self._da.rio.crs.to_epsg())
@@ -125,6 +125,8 @@ class EmpiricalBathymetry:
         self._gdf = temp
         self._minmax = minmax
         self._sigma = sigma
+        
+        self._zcol = depth_col
         
         # Reset calibration results, if any
         self._reset_results()
@@ -177,7 +179,7 @@ class EmpiricalBathymetry:
         self._calibrated = True
         
         if visualise:
-            plot_regression(train_gdf, test_gdf=test_gdf, m0=self._m0, m1=self._m1, metric=self._rmse)
+            plot_regression(train_gdf, test_gdf=test_gdf, m0=self._m0, m1=self._m1, metric=self._rmse, col=self._zcol)
 
     @property
     def array(self, bands: list=None) -> xr.DataArray:
