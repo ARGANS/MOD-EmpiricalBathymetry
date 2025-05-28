@@ -47,7 +47,7 @@ class EmpiricalBathymetry:
         self._rmse       = None
         self._val_rmse   = None
         self._nb         = None
-
+        self._plot       = None
 
     def set_imagery(self, data_array: xr.DataArray, band_i: Optional[str]='band_i', band_j: Optional[str]='band_j', visualise: bool=False) -> None:
         
@@ -179,7 +179,7 @@ class EmpiricalBathymetry:
         self._calibrated = True
         
         if visualise:
-            plot_regression(train_gdf, test_gdf=test_gdf, m0=self._m0, m1=self._m1, metric=self._rmse, col=self._zcol)
+            self._plot = plot_regression(train_gdf, test_gdf=test_gdf, m0=self._m0, m1=self._m1, metric=self._rmse, col=self._zcol)
 
     @property
     def array(self, bands: list=None) -> xr.DataArray:
@@ -198,6 +198,11 @@ class EmpiricalBathymetry:
     def insitu(self) -> gpd.GeoDataFrame:
         self._iscalibrated()
         return self._gdf
+    
+    @property
+    def plot(self) -> gpd.GeoDataFrame:
+        self._iscalibrated()
+        return self._plot
     
     @property
     def stats(self) -> dict:
@@ -298,3 +303,5 @@ class EmpiricalBathymetry:
         self._nb = None
         self._rmse = None
         self._val_rmse = None
+        self._plot = None
+        
