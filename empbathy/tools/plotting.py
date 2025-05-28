@@ -25,12 +25,12 @@ def plot_regression(train_gdf: gpd.GeoDataFrame,
     plt.rcParams["font.family"] = "serif"
     plt.rcParams["font.style"] = "normal"
 
-    x_train = train_gdf['Z']
+    x_train = train_gdf[col]
     y_train = train_gdf['logratio']
 
     # Combine train and test for plotting bounds
     if test_gdf is not None and not test_gdf.empty:
-        x_test = test_gdf['Z']
+        x_test = test_gdf[col]
         y_test = test_gdf['logratio']
         x_min = min(x_train.min(), x_test.min())
         x_max = max(x_train.max(), x_test.max())
